@@ -22,21 +22,23 @@ class AlbumsDropdown extends Component {
          return response.json();
        })
        .then(data => {
+      //   console.log(data);
          const photos = data.map((photo, index) => {
-
+//console.log(e);
            if (e === photo.albumId) {
-             console.log(photo);
-             return <Photos id={photo.id} url={photo.url} title={photo.title} photos={this.state.photos} />;
+             this.setState({
+               photos: [...this.state.photos, photo]
+             });
+        /*     return <Photos key={photo.id} photos={photos} />;*/
            }
 
            });
-           this.setState({
-             photos: photos
-           });
+
        });
    });
    console.log(e);
    console.log(this.state.query);
+   console.log(this.state.photos);
 
 
 }
@@ -76,10 +78,8 @@ class AlbumsDropdown extends Component {
            {this.state.albums}
           </Dropdown.Menu>
     </Dropdown>
-    <div>
-{this.state.photos}
-</div>
-</div>
+    <Photos />
+    </div>
     );
   }
 }
