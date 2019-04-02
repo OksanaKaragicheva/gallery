@@ -1,14 +1,31 @@
 import React from 'react';
-//import Container from 'react-bootstrap/Container';
-//import Row from 'react-bootstrap/Row';
-//import Col from 'react-bootstrap/Col';
+import Image from 'react-bootstrap/Image';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 
 function Photos(props) {
     return (
-      <div>
-      {props.photos.map(photo =>
-         <img src={photo.thumbnailUrl} key={photo.id} alt={`Pic ${photo.id}`} />)}
-      </div>
+      <Container>
+        <Row>
+          {props.photos.map((photo) => {
+            return (
+             <Col xs={6} md={4} key={photo.id}>
+              <figure key={photo.id}>
+                <Image src={photo.thumbnailUrl} rounded />
+                  <figcaption>
+                    {photo.title}
+                  </figcaption>
+              </figure>
+             </Col>
+
+        )
+      }
+      )
+
+      }
+        </Row>
+      </Container>
     );
 }
 
