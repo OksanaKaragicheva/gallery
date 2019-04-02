@@ -1,28 +1,15 @@
-import React, { Component } from 'react';
+import React from 'react';
 //import Container from 'react-bootstrap/Container';
 //import Row from 'react-bootstrap/Row';
 //import Col from 'react-bootstrap/Col';
 
-class Photos extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-    }
-
-
-  }
-
-  render() {
+function Photos(props) {
     return (
-
-          <img src={this.props.url} alt="альтернативный текст" />
-
-
+      <div>
+      {props.photos.map(photo =>
+         <img src={photo.thumbnailUrl} key={photo.id} alt={`Pic ${photo.id}`} />)}
+      </div>
     );
-  }
-
-
 }
 
 export default Photos;
