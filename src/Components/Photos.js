@@ -1,15 +1,14 @@
 import React from 'react';
-import Image from 'react-bootstrap/Image';
-import Container from 'react-bootstrap/Container';
+//import Col from 'react-bootstrap/Col';
+//import Container from 'react-bootstrap/Container';
+//import Row from 'react-bootstrap/Row';
 import Photo from '../Components/Photo';
 
 function Photos(props) {
     return (
-      <Container>
-        <Row>
-          <Photo />
-        </Row>
-      </Container>
+
+          <Photo photos={props.photos} />
+
     );
 }
 
