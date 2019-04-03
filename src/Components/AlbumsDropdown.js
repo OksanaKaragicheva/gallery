@@ -9,7 +9,6 @@ class AlbumsDropdown extends Component {
 
     this.state = {
       albums: [],
-      query: 'albums',
       photos: [],
       title: '',
       tag: ''
@@ -17,6 +16,10 @@ class AlbumsDropdown extends Component {
 
     this.request = this.request.bind(this);
     this.openAlbum = this.openAlbum.bind(this);
+    this.handleTitle = this.handleTitle.bind(this);
+    this.handleTag = this.handleTag.bind(this);
+    this.filterByTitle = this.filterByTitle.bind(this);
+    this.filterByTag = this.filterByTag.bind(this);
   }
 
   handleTitle(e) {
@@ -28,16 +31,40 @@ class AlbumsDropdown extends Component {
   }
 
   filterByTitle(){
+    console.log(this.state.title);
+    console.log("FUNC filterByTitle");
 
+      fetch(this.props.api + 'photos')
+        .then(response => {
+          return response.json();
+        })
+        .then(data => {
+       //   console.log(data);
+          const photos = data.filter((photo, index) => {
+            const strForFilterByTitle = this.state.title;
+   console.log(this.state.title);
+              if (photo.title.search(strForFilterByTitle) !== -1) {
+             return photo;
+            }
+
+            });
+            console.log(photos);
+            this.setState({
+              photos: photos,
+              title: ""
+            });
+        });
+    //  console.log(e);
   }
 
   filterByTag(){
-    console.log();
+    console.log(this.state.tag);
   }
 
  openAlbum(e) {
-   this.setState({query: 'photos'}, function() {
-     fetch(this.props.api + this.state.query)
+   console.log("FUNC openAlbum");
+  // this.setState({query: 'photos'}, function() {
+     fetch(this.props.api + 'photos')
        .then(response => {
          return response.json();
        })
@@ -51,12 +78,13 @@ class AlbumsDropdown extends Component {
            });
            console.log(photos);
            this.setState({
-             photos: photos
+             photos: photos,
+             title: ""
            });
        });
-   });
+  // });
    console.log(e);
-   console.log(this.state.query);
+   //console.log(this.state.query);
    //console.log(this.state.photos);
 
 
@@ -82,7 +110,7 @@ class AlbumsDropdown extends Component {
   }
 
   componentDidMount() {
-    this.request(this.state.query);
+    this.request("albums");
   }
   render() {
     return (
@@ -103,7 +131,8 @@ class AlbumsDropdown extends Component {
     handleTitle={this.handleTitle}
     handleTag={this.handleTag}
     filterByTag={this.filterByTag}
-    filterByTitle={this.filterByTitle}/>
+    filterByTitle={this.filterByTitle}
+    />
     <Photos photos={this.state.photos} />
     </div>
     );

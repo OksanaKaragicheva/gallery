@@ -4,16 +4,7 @@ import FormControl from 'react-bootstrap/FormControl';
 import Button from 'react-bootstrap/Button';
 
 class FilterFotosByTitle extends Component {
-  constructor(props) {
-    super(props);
 
-    this.filterByTitle = this.filterByTitle.bind(this);
-
-  }
-
-  filterByTitle(){
-
-  }
 
   render() {
     return (
@@ -26,7 +17,7 @@ class FilterFotosByTitle extends Component {
       onChange={this.props.handleTitle}
     />
     <InputGroup.Append>
-      <Button variant="info" className="filterButton" onClick={this.filterByTitle}>Filter by title</Button>
+      <Button variant="info" className="filterButton" onClick={this.props.filterByTitle}>Filter by title</Button>
     </InputGroup.Append>
   </InputGroup>
     );
