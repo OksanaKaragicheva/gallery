@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import Filters from '../Components/Filters';
 import Photos from '../Components/Photos';
-
+const numAlbums = 100;
+const numPhotos = 50;
 class AlbumsDropdown extends Component {
   constructor(props) {
     super(props);
@@ -10,18 +11,21 @@ class AlbumsDropdown extends Component {
     this.state = {
       albums: [],
       photos: [],
-      selectedTags: [],
+      listOfTags: Array(numAlbums).fill(null).map(() => Array(numPhotos).fill('')),
       title: '',
-      tag: ''
+      tag: '',
+      addTag: ""
     }
 
     this.request = this.request.bind(this);
     this.openAlbum = this.openAlbum.bind(this);
     this.handleTitle = this.handleTitle.bind(this);
     this.handleTag = this.handleTag.bind(this);
-    this.handleSelectedTag = this.handleSelectedTag.bind(this);
+    this.handleAddTag = this.handleAddTag.bind(this);
     this.filterByTitle = this.filterByTitle.bind(this);
     this.filterByTag = this.filterByTag.bind(this);
+    this.showNewTag = this.showNewTag.bind(this);
+
   }
 
   handleTitle(e) {
@@ -30,6 +34,17 @@ class AlbumsDropdown extends Component {
 
   handleTag(e) {
     this.setState({ tag: e.target.value });
+  }
+
+  handleAddTag(e) {
+   this.setState({ addTag: e.target.value });
+  }
+
+  showNewTag(albumId, photoId) {
+//    const addedTag =
+  this.setState({
+     listOfTags:  this.state.listOfTags[albumId][photoId] = this.state.addTag
+  });
   }
 
   filterByTitle(){
@@ -62,36 +77,16 @@ class AlbumsDropdown extends Component {
     //  console.log(e);
   }
 
-  handleSelectedTag(e) {
-    console.log("FUNC handleSelectedTag");
-       fetch(this.props.api + 'photos')
-        .then(response => {
-          return response.json();
-        })
-        .then(data => {
-          const photos = data.filter((photo, index) => {
-            if (photo.albumId.toString() === e) {
-             return photo;
-            }
 
-            });
-            console.log(photos);
-            this.setState({
-              photos: photos,
-              tag: "",
-              selectedTags: []
-            });
-        });
-       console.log(e);
-
-  }
 
   filterByTag(){
+
     console.log(this.state.tag);
   }
 
  openAlbum(e) {
    console.log("FUNC openAlbum");
+   console.log(typeof this.state.listOfTags);
   // this.setState({query: 'photos'}, function() {
      fetch(this.props.api + 'photos')
        .then(response => {
@@ -162,7 +157,13 @@ class AlbumsDropdown extends Component {
     filterByTag={this.filterByTag}
     filterByTitle={this.filterByTitle}
     />
-    <Photos photos={this.state.photos} handleSelectedTag={this.handleSelectedTag} />
+    <Photos
+    photos={this.state.photos}
+    handleAddTag={this.handleAddTag}
+    addTag={this.state.addTag}
+    showNewTag={this.showNewTag}
+    listOfTags={this.state.listOfTags}
+    />
     </div>
     );
   }
