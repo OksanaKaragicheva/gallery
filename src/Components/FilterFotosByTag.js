@@ -4,15 +4,8 @@ import FormControl from 'react-bootstrap/FormControl';
 import Button from 'react-bootstrap/Button';
 
 class FilterFotosByTag extends Component {
-  constructor(props) {
-    super(props);
 
-    this.filterByTag = this.filterByTag.bind(this);
 
-  }
-  filterByTag(){
-
-  }
   render() {
     return (
       <InputGroup className="filter">
@@ -21,9 +14,10 @@ class FilterFotosByTag extends Component {
       placeholder="Enter the tag..."
       aria-label="Tag"
       aria-describedby="basic-addon2"
+      onChange={this.props.handleTag}
     />
     <InputGroup.Append>
-      <Button variant="info" className="filterButton" onClick={this.filterByTag}>Filter by tag</Button>
+      <Button variant="info" className="filterButton" onClick={this.props.filterByTag}>Filter by tag</Button>
     </InputGroup.Append>
   </InputGroup>
     );

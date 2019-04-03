@@ -10,6 +10,7 @@ class AlbumsDropdown extends Component {
     this.state = {
       albums: [],
       photos: [],
+      selectedTags: [],
       title: '',
       tag: ''
     }
@@ -18,6 +19,7 @@ class AlbumsDropdown extends Component {
     this.openAlbum = this.openAlbum.bind(this);
     this.handleTitle = this.handleTitle.bind(this);
     this.handleTag = this.handleTag.bind(this);
+    this.handleSelectedTag = this.handleSelectedTag.bind(this);
     this.filterByTitle = this.filterByTitle.bind(this);
     this.filterByTag = this.filterByTag.bind(this);
   }
@@ -43,6 +45,9 @@ class AlbumsDropdown extends Component {
           const photos = data.filter((photo, index) => {
             const strForFilterByTitle = this.state.title;
    console.log(this.state.title);
+          if (strForFilterByTitle === "") {
+            return false;
+          }
               if (photo.title.search(strForFilterByTitle) !== -1) {
              return photo;
             }
@@ -55,6 +60,30 @@ class AlbumsDropdown extends Component {
             });
         });
     //  console.log(e);
+  }
+
+  handleSelectedTag(e) {
+    console.log("FUNC handleSelectedTag");
+       fetch(this.props.api + 'photos')
+        .then(response => {
+          return response.json();
+        })
+        .then(data => {
+          const photos = data.filter((photo, index) => {
+            if (photo.albumId.toString() === e) {
+             return photo;
+            }
+
+            });
+            console.log(photos);
+            this.setState({
+              photos: photos,
+              tag: "",
+              selectedTags: []
+            });
+        });
+       console.log(e);
+
   }
 
   filterByTag(){
@@ -133,7 +162,7 @@ class AlbumsDropdown extends Component {
     filterByTag={this.filterByTag}
     filterByTitle={this.filterByTitle}
     />
-    <Photos photos={this.state.photos} />
+    <Photos photos={this.state.photos} handleSelectedTag={this.handleSelectedTag} />
     </div>
     );
   }
