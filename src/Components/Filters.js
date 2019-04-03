@@ -2,11 +2,11 @@ import React from 'react';
 import FilterFotosByTitle from '../Components/FilterFotosByTitle';
 import FilterFotosByTag from '../Components/FilterFotosByTag';
 
-function Filters() {
+function Filters(props) {
   return (
     <div className="allFilter">
-      <FilterFotosByTitle />
-      <FilterFotosByTag />
+      <FilterFotosByTitle title={props.title} />
+      <FilterFotosByTag tag={props.tag} />
     </div>
   );
 }

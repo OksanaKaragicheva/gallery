@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Dropdown } from 'react-bootstrap';
+import Filters from '../Components/Filters';
 import Photos from '../Components/Photos';
 
 class AlbumsDropdown extends Component {
@@ -9,12 +10,31 @@ class AlbumsDropdown extends Component {
     this.state = {
       albums: [],
       query: 'albums',
-      photos: []
+      photos: [],
+      title: '',
+      tag: ''
     }
 
     this.request = this.request.bind(this);
     this.openAlbum = this.openAlbum.bind(this);
   }
+
+  handleTitle(e) {
+    this.setState({ title: e.target.value });
+  }
+
+  handleTag(e) {
+    this.setState({ tag: e.target.value });
+  }
+
+  filterByTitle(){
+
+  }
+
+  filterByTag(){
+    console.log();
+  }
+
  openAlbum(e) {
    this.setState({query: 'photos'}, function() {
      fetch(this.props.api + this.state.query)
@@ -77,6 +97,13 @@ class AlbumsDropdown extends Component {
            {this.state.albums}
           </Dropdown.Menu>
     </Dropdown>
+    <Filters
+    title={this.state.title}
+    tag={this.state.tag}
+    handleTitle={this.handleTitle}
+    handleTag={this.handleTag}
+    filterByTag={this.filterByTag}
+    filterByTitle={this.filterByTitle}/>
     <Photos photos={this.state.photos} />
     </div>
     );
