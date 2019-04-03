@@ -38,13 +38,13 @@ class AlbumsDropdown extends Component {
     this.setState({ tag: e.target.value });
   }
 
-  handleNewTagInput(e, albumId, photoId) { // not worked yet!!!
+  handleNewTagInput(e, albumId, photoId) { // not works yet!!!
     this.setState({
       listOfInputValues: [...this.state.listOfInputValues.slice(0, albumId), [...this.state.listOfInputValues[albumId].slice(0, photoId), e.target.value, ...this.state.listOfInputValues[albumId].slice(photoId + 1)], ...this.state.listOfInputValues.slice(albumId + 1)]
     });
   }
 
-  showNewTag(albumId, photoId) { // not worked yet!!!
+  showNewTag(albumId, photoId) { // not works yet!!!
     this.setState({
       listOfTags: [...this.state.listOfTags.slice(0, albumId), [...this.state.listOfTags[albumId].slice(0, photoId), this.state.listOfInputValues[albumId][photoId], ...this.state.listOfTags[albumId].slice(photoId + 1)], ...this.state.listOfTags.slice(albumId + 1)]
     });
@@ -72,7 +72,7 @@ class AlbumsDropdown extends Component {
        });
    }
 
- filterByTag() { // not implemented!!!!!!!!!!!
+ filterByTag() { // not implement!!!!!!!!!!!
    //console.log(this.state.tag);
  }
 
