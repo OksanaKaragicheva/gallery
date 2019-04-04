@@ -5,7 +5,7 @@ import Gallery from '../Components/Gallery';
 class App extends Component {
   render() {
     return (
-      <Gallery />
+      <Gallery api="https://jsonplaceholder.typicode.com/" />
     );
   }
 }

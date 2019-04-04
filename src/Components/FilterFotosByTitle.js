@@ -7,11 +7,11 @@ function FilterFotosByTitle(props) {
    return (
       <InputGroup className="filter">
         <FormControl
-          value={props.title}
+          value={props.titleToFilter}
           placeholder="Enter the title..."
           aria-label="Title"
           aria-describedby="basic-addon2"
-          onChange={props.handleTitle}
+          onChange={props.handleTitleToFilter}
         />
           <InputGroup.Append>
             <Button variant="info" className="filterButton" onClick={props.filterByTitle}>Filter by title</Button>

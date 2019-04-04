@@ -6,13 +6,13 @@ function Filters(props) {
   return (
     <div className="allFilter">
       <FilterFotosByTitle
-        title={props.title}
-        handleTitle={props.handleTitle}
+        titleToFilter={props.titleToFilter}
+        handleTitleToFilter={props.handleTitleToFilter}
         filterByTitle={props.filterByTitle}
       />
       <FilterFotosByTag
-        tag={props.tag}
-        handleTag={props.handleTag}
+        tagToFilter={props.tagToFilter}
+        handleTagToFilter={props.handleTagToFilter}
         filterByTag={props.filterByTag}
       />
     </div>

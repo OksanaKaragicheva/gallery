@@ -7,11 +7,11 @@ function FilterFotosByTag(props) {
    return (
       <InputGroup className="filter">
         <FormControl
-          value={props.tag}
+          value={props.tagToFilter}
           placeholder="Enter the tag..."
           aria-label="Tag"
           aria-describedby="basic-addon2"
-          onChange={props.handleTag}
+          onChange={props.handleTagToFilter}
         />
           <InputGroup.Append>
             <Button variant="info" className="filterButton" onClick={props.filterByTag}>Filter by tag</Button>
