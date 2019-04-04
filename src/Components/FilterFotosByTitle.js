@@ -14,7 +14,7 @@ function FilterFotosByTitle(props) {
           onChange={props.handleTitleToFilter}
         />
           <InputGroup.Append>
-            <Button variant="info" className="filterButton" onClick={props.filterByTitle}>Filter by title</Button>
+            <Button variant="info" className="filterButton" onClick={props.filterByTitle}>Filter by photo title in all albums</Button>
           </InputGroup.Append>
        </InputGroup>
     );
