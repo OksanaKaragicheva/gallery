@@ -14,7 +14,7 @@ function FilterFotosByTag(props) {
           onChange={props.handleTagToFilter}
         />
           <InputGroup.Append>
-            <Button variant="info" className="filterButton" onClick={props.filterByTag}>Filter by photo tag in album</Button>
+            <Button variant="info" className="filterButton" onClick={props.filterByTag}>Filter by photo tag in all albums</Button>
           </InputGroup.Append>
       </InputGroup>
     );
