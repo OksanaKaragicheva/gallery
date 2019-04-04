@@ -83,7 +83,7 @@ class Gallery extends Component {
      })
      .then(data => {
         const photos = data.filter((photo, index) => {
-        const strForFilterByTag = (this.state.tagToFilter).toString();
+        const strForFilterByTag = this.state.tagToFilter;
           if (strForFilterByTag === "") {
             return false;
           }
