@@ -13,7 +13,6 @@ class Gallery extends Component {
       albums: [],
       photos: [],
       listOfTags: Array.from(Array(numAlbums), () => []),
-      listOfInputValues: Array.from(Array(numAlbums), () => []),
       titleToFilter: '',
       tagToFilter: ''
     }
@@ -22,7 +21,6 @@ class Gallery extends Component {
     this.openAlbum = this.openAlbum.bind(this);
     this.handleTitleToFilter = this.handleTitleToFilter.bind(this);
     this.handleTagToFilter = this.handleTagToFilter.bind(this);
-    this.handleNewTagInput = this.handleNewTagInput.bind(this);
     this.filterByTitle = this.filterByTitle.bind(this);
     this.filterByTag = this.filterByTag.bind(this);
     this.showNewTag = this.showNewTag.bind(this);
@@ -37,17 +35,9 @@ class Gallery extends Component {
     this.setState({ tagToFilter: e.target.value });
   }
 
-  handleNewTagInput(e, albumId, photoId) {
-    let listOfInputValuesNew = JSON.parse(JSON.stringify(this.state.listOfInputValues));
-    listOfInputValuesNew[albumId][photoId] = e.target.value;
-    this.setState({
-      listOfInputValues: listOfInputValuesNew
-    });
-  }
-
-  showNewTag(albumId, photoId) {
+  showNewTag(albumId, photoId, inputNewTag) {
     let listOfTagsNew = JSON.parse(JSON.stringify(this.state.listOfTags));
-    listOfTagsNew[albumId][photoId] = this.state.listOfInputValues[albumId][photoId];
+    listOfTagsNew[albumId][photoId] = inputNewTag;
     this.setState({
       listOfTags: listOfTagsNew
     });
@@ -149,7 +139,7 @@ componentDidMount() {
     return (
       <div>
         <Dropdown id="dropdownButton">
-          <Dropdown.Toggle variant="warning" id="firstDropdownToggle">
+          <Dropdown.Toggle variant="warning">
             <Dropdown.Header id="dropdownHeader">
               Albums
             </Dropdown.Header>
@@ -168,8 +158,6 @@ componentDidMount() {
          />
          <Photos
            photos={this.state.photos}
-           handleNewTagInput={this.handleNewTagInput}
-           listOfInputValues={this.state.listOfInputValues}
            showNewTag={this.showNewTag}
            listOfTags={this.state.listOfTags}
          />

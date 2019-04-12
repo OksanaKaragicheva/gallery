@@ -9,12 +9,16 @@ function FilterFotosByTitle(props) {
         <FormControl
           value={props.titleToFilter}
           placeholder="Enter the title..."
-          aria-label="Title"
-          aria-describedby="basic-addon2"
+          aria-label="enterTitleToFilter"
+          aria-describedby="filterPhotosByTitle"
           onChange={props.handleTitleToFilter}
         />
           <InputGroup.Append>
-            <Button variant="info" className="filterButton" onClick={props.filterByTitle}>Filter by photo title in all albums</Button>
+            <Button
+             variant="info"
+             className="filterButton"
+             onClick={props.filterByTitle}
+             >Filter by photo title in all albums</Button>
           </InputGroup.Append>
        </InputGroup>
     );

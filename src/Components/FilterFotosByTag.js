@@ -9,12 +9,16 @@ function FilterFotosByTag(props) {
         <FormControl
           value={props.tagToFilter}
           placeholder="Enter the tag..."
-          aria-label="Tag"
-          aria-describedby="basic-addon2"
+          aria-label="enterTagToFilter"
+          aria-describedby="filterPhotosByTag"
           onChange={props.handleTagToFilter}
         />
           <InputGroup.Append>
-            <Button variant="info" className="filterButton" onClick={props.filterByTag}>Filter by photo tag in all albums</Button>
+            <Button
+             variant="info"
+             className="filterButton"
+             onClick={props.filterByTag}
+             >Filter by photo tag in all albums</Button>
           </InputGroup.Append>
       </InputGroup>
     );
