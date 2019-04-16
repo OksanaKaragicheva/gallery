@@ -3,7 +3,7 @@ import { Dropdown } from 'react-bootstrap';
 import Filters from '../Components/Filters';
 import Photos from '../Components/Photos';
 
-const numAlbums = 101;
+//const numAlbums = 101;
 
 class Gallery extends Component {
   constructor(props) {
@@ -12,7 +12,7 @@ class Gallery extends Component {
     this.state = {
       albums: [],
       photos: [],
-      listOfTags: Array.from(Array(numAlbums), () => []),
+      mapOfTags: new Map(),
       titleToFilter: '',
       tagToFilter: ''
     }
@@ -36,11 +36,26 @@ class Gallery extends Component {
   }
 
   showNewTag(albumId, photoId, inputNewTag) {
-    let listOfTagsNew = JSON.parse(JSON.stringify(this.state.listOfTags));
-    listOfTagsNew[albumId][photoId] = inputNewTag;
-    this.setState({
-      listOfTags: listOfTagsNew
-    });
+    let nm1 = Array.from(this.state.mapOfTags.entries());
+      console.log("nm1____" + nm1);
+    let nm2 = nm1.map((el) => [el[0], Array.from(el[1].entries())]);
+      console.log("nm2____" + nm2);
+    let nm3 = nm2.map((el) => [el[0], el[1].map((elem) => [elem[0], [...elem[1]]])]);
+      console.log("nm3__" + nm3);
+    let nm4 = nm3.map((el) => [el[0], new Map(el[1])]);
+      console.log("nm4_" + nm4);
+    let newMapOfTags = new Map(nm4);
+      console.log("newMapOfTags___" + newMapOfTags);
+      if (newMapOfTags.get(albumId) === undefined) {
+          newMapOfTags.set(albumId, new Map().set(photoId, ["#" + inputNewTag]));
+      }
+      else {
+          newMapOfTags.get(albumId).set(photoId, [newMapOfTags.get(albumId).get(photoId), "#" + inputNewTag]);
+      }
+      this.setState({
+        mapOfTags: newMapOfTags
+      });
+      console.log("NEW MAP TAGS " + newMapOfTags.get(albumId).get(photoId));
   }
 
   filterByTitle(){
@@ -77,14 +92,22 @@ class Gallery extends Component {
           if (strForFilterByTag === "") {
             return false;
           }
-          var tagString = this.state.listOfTags[photo.albumId][photo.id];
-          if (tagString == null) {
+          var tagsArray = this.state.mapOfTags[photo.albumId].get(photo.id);
+          console.log("Array Of TAGS " + tagsArray);
+          if (tagsArray === undefined) {
               return false;
           }
-          if (tagString.search(strForFilterByTag) !== -1) {
-              return photo;
+           if (tagsArray !== undefined) {
+            tagsArray.map((tag) => {
+              if (tag.search(strForFilterByTag) !== -1) {
+                console.log("GOOOOOOOOOOD");
+                return photo;
+
+              }
+              return null;
+            });
           }
-          return null;
+         return null;
         });
            this.setState({
              photos: photos,
@@ -159,7 +182,7 @@ componentDidMount() {
          <Photos
            photos={this.state.photos}
            showNewTag={this.showNewTag}
-           listOfTags={this.state.listOfTags}
+           mapOfTags={this.state.mapOfTags}
          />
       </div>
     );

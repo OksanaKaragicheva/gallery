@@ -5,13 +5,14 @@ function Photos(props) {
   return (
     <div className="allPhotos">
        {props.photos.map((photo, index) => {
-         var tagString = props.listOfTags[photo.albumId][photo.id];
-         tagString = (tagString != null) ? tagString : '';
-           return (
+         var tagsArray = (props.mapOfTags.get(photo.albumId) !== undefined)
+                          ? props.mapOfTags.get(photo.albumId).get(photo.id)
+                          : '';
+            return (
               <Photo
                key={photo.id}
                photo={photo}
-               tagString={tagString}
+               tagsArray={tagsArray}
                showNewTag={props.showNewTag}
               />
            );

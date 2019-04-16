@@ -1,52 +1,35 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import InputGroup from 'react-bootstrap/InputGroup';
 import FormControl from 'react-bootstrap/FormControl';
 
-class Photo extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      inputNewTag: ''
-    };
-
-    this.handleNewTagInput = this.handleNewTagInput.bind(this);
-  }
-
-  handleNewTagInput(e) {
-    this.setState({
-      inputNewTag: e.target.value
-    });
-  }
-
- render() {
+function Photo(props) {
+  const [inputNewTag, setInputNewTag] = useState('');
    return (
      <Card className="card">
-      <Card.Img variant="top" src={this.props.photo.thumbnailUrl} />
+      <Card.Img variant="top" src={props.photo.thumbnailUrl} />
        <Card.Body className="cardBodyStyle">
-        <Card.Title className="photoTitle">{this.props.photo.title}</Card.Title>
-         <Card.Text className="tagsList">{this.props.tagString}</Card.Text>
+        <Card.Title className="photoTitle">{props.photo.title}</Card.Title>
+         <Card.Text className="tagsList">{props.tagsArray}</Card.Text>
           <InputGroup>
            <FormControl
-            value={this.state.inputNewTag}
+            value={inputNewTag}
             className="inputTagField"
             placeholder="Enter tag"
             aria-label="enterTag"
             aria-describedby="enterNewTagForCurrentPhoto"
-            onChange={this.handleNewTagInput}
+            onChange={(e) => setInputNewTag(e.target.value)}
            />
              <Button
               className="addTagButton"
               variant="secondary"
-              onClick={() => this.props.showNewTag(this.props.photo.albumId, this.props.photo.id, this.state.inputNewTag)}
+              onClick={() => props.showNewTag(props.photo.albumId, props.photo.id, inputNewTag)}
              >Add</Button>
             </InputGroup>
            </Card.Body>
           </Card>
    );
-  }
 }
 
 export default Photo;
