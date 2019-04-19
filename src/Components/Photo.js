@@ -6,12 +6,30 @@ import FormControl from 'react-bootstrap/FormControl';
 
 function Photo(props) {
   const [inputNewTag, setInputNewTag] = useState('');
-   return (
+  return (
      <Card className="card">
       <Card.Img variant="top" src={props.photo.thumbnailUrl} />
        <Card.Body className="cardBodyStyle">
         <Card.Title className="photoTitle">{props.photo.title}</Card.Title>
-         <Card.Text className="tagsList">{props.tagsArray}</Card.Text>
+         <Card.Text>
+         {
+          typeof props.tagsArray == 'object'
+          ? (props.tagsArray.map((el, index) => {
+             return (
+               <Button
+                className="tagLink"
+                variant="link"
+                size="sm"
+                title="Filter by tag..."
+                key={index}
+                onClick={() => props.filterByTag(el)}>
+                  {el}
+               </Button>
+             );
+            }))
+          : ""
+          }
+          </Card.Text>
           <InputGroup>
            <FormControl
             value={inputNewTag}

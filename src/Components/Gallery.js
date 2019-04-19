@@ -37,25 +37,29 @@ class Gallery extends Component {
 
   showNewTag(albumId, photoId, inputNewTag) {
     let nm1 = Array.from(this.state.mapOfTags.entries());
-      console.log("nm1____" + nm1);
+    //  console.log("nm1____" + nm1);
     let nm2 = nm1.map((el) => [el[0], Array.from(el[1].entries())]);
-      console.log("nm2____" + nm2);
+    //  console.log("nm2____" + nm2);
     let nm3 = nm2.map((el) => [el[0], el[1].map((elem) => [elem[0], [...elem[1]]])]);
-      console.log("nm3__" + nm3);
+    //  console.log("nm3__" + nm3);
     let nm4 = nm3.map((el) => [el[0], new Map(el[1])]);
-      console.log("nm4_" + nm4);
+    //  console.log("nm4_" + nm4);
     let newMapOfTags = new Map(nm4);
-      console.log("newMapOfTags___" + newMapOfTags);
+    //  console.log("newMapOfTags___" , newMapOfTags);
+    if (inputNewTag !== '') {
       if (newMapOfTags.get(albumId) === undefined) {
-          newMapOfTags.set(albumId, new Map().set(photoId, ["#" + inputNewTag]));
+          newMapOfTags.set(albumId, new Map().set(photoId, [`#${inputNewTag}`]));
       }
       else {
-          newMapOfTags.get(albumId).set(photoId, [newMapOfTags.get(albumId).get(photoId), "#" + inputNewTag]);
+          newMapOfTags.get(albumId).set(photoId, newMapOfTags.get(albumId).get(photoId) === undefined
+                                                 ? [`#${inputNewTag}`]
+                                                 : [...newMapOfTags.get(albumId).get(photoId), `#${inputNewTag}`]);
       }
+     }
       this.setState({
         mapOfTags: newMapOfTags
       });
-      console.log("NEW MAP TAGS " + newMapOfTags.get(albumId).get(photoId));
+    //  console.log("NEW MAP TAGS " , newMapOfTags.get(albumId).get(photoId));
   }
 
   filterByTitle(){
@@ -81,7 +85,7 @@ class Gallery extends Component {
        });
    }
 
- filterByTag() {
+ filterByTag(t) {
    fetch(this.props.api + 'photos')
      .then(response => {
         return response.json();
@@ -89,31 +93,41 @@ class Gallery extends Component {
      .then(data => {
         const photos = data.filter((photo, index) => {
         const strForFilterByTag = this.state.tagToFilter;
-          if (strForFilterByTag === "") {
-            return false;
+        let strForFilterByTagInPhoto = t;
+        console.log("strForFilterByTagInPhoto", strForFilterByTagInPhoto);
+          if (strForFilterByTag === '' && strForFilterByTagInPhoto === '') {
+             return false;
           }
-          var tagsArray = this.state.mapOfTags[photo.albumId].get(photo.id);
-          console.log("Array Of TAGS " + tagsArray);
-          if (tagsArray === undefined) {
-              return false;
-          }
-           if (tagsArray !== undefined) {
-            tagsArray.map((tag) => {
-              if (tag.search(strForFilterByTag) !== -1) {
-                console.log("GOOOOOOOOOOD");
-                return photo;
+           if (this.state.mapOfTags.has(photo.albumId)) {
+           console.log("HAS PHOTOALB ID", this.state.mapOfTags.has(photo.albumId));
+              var tagsArray = this.state.mapOfTags.get(photo.albumId).get(photo.id);
+           //console.log("tagsArray", tagsArray);
+              if (tagsArray !== undefined) {
+                 if (tagsArray.some((tag) => tag.search(strForFilterByTag) !== -1)){
+                    return photo;
+                 }
+              /*if (strForFilterByTag === '') {
+                console.log("filter by tag IN PHOTO");
+                if (tagsArray.some((tag) => tag.search(strForFilterByTagInPhoto) !== -1)) {
+                  return photo;
+                }
+                strForFilterByTagInPhoto = '';
+                console.log("strForFilterByTagInPhoto", strForFilterByTagInPhoto);
+              }*/
 
               }
-              return null;
-            });
-          }
-         return null;
-        });
-           this.setState({
-             photos: photos,
-             tagToFilter: ""
-           });
+              strForFilterByTagInPhoto = "";
+              console.log("strForFilterByTagInPhoto", strForFilterByTagInPhoto);
+            }
+          return null;
       });
+        this.setState({
+          photos: photos,
+          tagToFilter: ""
+        });
+
+    });
+    console.log("this.state.tagToFilter FROM INPUT", this.state.tagToFilter);
  }
 
  openAlbum(e) {
@@ -143,7 +157,7 @@ request(query) {
     .then(data => {
        const albums = data.map((obj, index) => {
          return (
-           <Dropdown.Item eventKey={obj.id} key={obj.id} href="#/action-1" onSelect={this.openAlbum}>
+           <Dropdown.Item eventKey={obj.id} key={obj.id} href="#" onSelect={this.openAlbum}>
               {`${obj.title[0].toUpperCase()}${obj.title.slice(1)}`}
            </Dropdown.Item>
          );
@@ -183,6 +197,7 @@ componentDidMount() {
            photos={this.state.photos}
            showNewTag={this.showNewTag}
            mapOfTags={this.state.mapOfTags}
+           filterByTag={this.filterByTag}
          />
       </div>
     );

@@ -14,6 +14,7 @@ function Photos(props) {
                photo={photo}
                tagsArray={tagsArray}
                showNewTag={props.showNewTag}
+               filterByTag={props.filterByTag}
               />
            );
         })
