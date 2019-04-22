@@ -8,7 +8,7 @@ class Gallery extends Component {
     super(props);
 
     this.state = {
-      albums: [],
+      albums: JSON.parse(localStorage.getItem("_oksanakaragicheva_albums")),
       photos: JSON.parse(localStorage.getItem("_oksanakaragicheva_photos")),
       mapOfTags: JSON.parse(localStorage.getItem("_oksanakaragicheva_tags")) !== null
                  ? new Map(JSON.parse(localStorage.getItem("_oksanakaragicheva_tags")).map((el) => [el[0], new Map(el[1])]))
@@ -51,6 +51,15 @@ class Gallery extends Component {
            mapOfTags: newMapOfTags
          });
      }
+  }
+
+  componentDidMount() {
+    if (localStorage.getItem("_oksanakaragicheva_albums") === null) {
+      this.request("albums");
+    } else {
+      console.log(localStorage.getItem("_oksanakaragicheva_albums"));
+      console.log("DATA FROM LOCALSTORAGE");
+    }
   }
 
   handleTitleToFilter(e) {
@@ -181,14 +190,14 @@ request(query) {
          this.setState({
            albums: albums
          });
+         localStorage.setItem(
+           "_oksanakaragicheva_albums",
+           JSON.stringify(this.state.albums)
+         );
       });
 }
 
-componentDidMount() {
-  this.request("albums");
-}
-
-  render() {
+render() {
     return (
       <div>
         <Dropdown id="dropdownButton">
