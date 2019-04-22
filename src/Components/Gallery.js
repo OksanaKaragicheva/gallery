@@ -3,16 +3,16 @@ import { Dropdown } from 'react-bootstrap';
 import Filters from '../Components/Filters';
 import Photos from '../Components/Photos';
 
-//const numAlbums = 101;
-
 class Gallery extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
       albums: [],
-      photos: [],
-      mapOfTags: new Map(),
+      photos: JSON.parse(localStorage.getItem("_oksanakaragicheva_photos")),
+      mapOfTags: JSON.parse(localStorage.getItem("_oksanakaragicheva_tags")) !== null
+                 ? new Map(JSON.parse(localStorage.getItem("_oksanakaragicheva_tags")).map((el) => [el[0], new Map(el[1])]))
+                 : new Map(),
       titleToFilter: '',
       tagToFilter: ''
     }
@@ -27,6 +27,32 @@ class Gallery extends Component {
 
   }
 
+  componentWillMount() {
+    if (localStorage.getItem("_oksanakaragicheva_photos") === null) {
+       localStorage.setItem(
+         "_oksanakaragicheva_photos",
+         JSON.stringify([])
+       );
+       this.setState({
+         photos: JSON.parse(localStorage.getItem("_oksanakaragicheva_photos"))
+       });
+    }
+    if (localStorage.getItem("_oksanakaragicheva_tags") === null) {
+       let nm1 = Array.from(this.state.mapOfTags.entries());
+       let nm2 = nm1.map((el) => [el[0], Array.from(el[1].entries())]);
+       let nm3 = nm2.map((el) => [el[0], el[1].map((elem) => [elem[0], [...elem[1]]])]);
+         localStorage.setItem(
+           "_oksanakaragicheva_tags",
+           JSON.stringify(nm3)
+         );
+       let nm4 = JSON.parse(localStorage.getItem("_oksanakaragicheva_tags")).map((el) => [el[0], new Map(el[1])]);
+       let newMapOfTags = new Map(nm4);
+         this.setState({
+           mapOfTags: newMapOfTags
+         });
+     }
+  }
+
   handleTitleToFilter(e) {
     this.setState({ titleToFilter: e.target.value });
   }
@@ -36,16 +62,8 @@ class Gallery extends Component {
   }
 
   showNewTag(albumId, photoId, inputNewTag) {
-    let nm1 = Array.from(this.state.mapOfTags.entries());
-    //  console.log("nm1____" + nm1);
-    let nm2 = nm1.map((el) => [el[0], Array.from(el[1].entries())]);
-    //  console.log("nm2____" + nm2);
-    let nm3 = nm2.map((el) => [el[0], el[1].map((elem) => [elem[0], [...elem[1]]])]);
-    //  console.log("nm3__" + nm3);
-    let nm4 = nm3.map((el) => [el[0], new Map(el[1])]);
-    //  console.log("nm4_" + nm4);
+    let nm4 = JSON.parse(localStorage.getItem("_oksanakaragicheva_tags")).map((el) => [el[0], new Map(el[1])]);
     let newMapOfTags = new Map(nm4);
-    //  console.log("newMapOfTags___" , newMapOfTags);
     if (inputNewTag !== '') {
       if (newMapOfTags.get(albumId) === undefined) {
           newMapOfTags.set(albumId, new Map().set(photoId, [`#${inputNewTag}`]));
@@ -59,7 +77,13 @@ class Gallery extends Component {
       this.setState({
         mapOfTags: newMapOfTags
       });
-    //  console.log("NEW MAP TAGS " , newMapOfTags.get(albumId).get(photoId));
+     let nm1 = Array.from(newMapOfTags.entries());
+     let nm2 = nm1.map((el) => [el[0], Array.from(el[1].entries())]);
+     let nm3 = nm2.map((el) => [el[0], el[1].map((elem) => [elem[0], [...elem[1]]])]);
+       localStorage.setItem(
+         "_oksanakaragicheva_tags",
+         JSON.stringify(nm3)
+       );
   }
 
   filterByTitle(){
@@ -82,6 +106,10 @@ class Gallery extends Component {
               photos: photos,
               titleToFilter: ""
             });
+            localStorage.setItem(
+              "_oksanakaragicheva_photos",
+              JSON.stringify(this.state.photos)
+            );
        });
    }
 
@@ -92,42 +120,26 @@ class Gallery extends Component {
      })
      .then(data => {
         const photos = data.filter((photo, index) => {
-        const strForFilterByTag = this.state.tagToFilter;
-        let strForFilterByTagInPhoto = t;
-        console.log("strForFilterByTagInPhoto", strForFilterByTagInPhoto);
-          if (strForFilterByTag === '' && strForFilterByTagInPhoto === '') {
-             return false;
-          }
-           if (this.state.mapOfTags.has(photo.albumId)) {
-           console.log("HAS PHOTOALB ID", this.state.mapOfTags.has(photo.albumId));
-              var tagsArray = this.state.mapOfTags.get(photo.albumId).get(photo.id);
-           //console.log("tagsArray", tagsArray);
-              if (tagsArray !== undefined) {
-                 if (tagsArray.some((tag) => tag.search(strForFilterByTag) !== -1)){
-                    return photo;
-                 }
-              /*if (strForFilterByTag === '') {
-                console.log("filter by tag IN PHOTO");
-                if (tagsArray.some((tag) => tag.search(strForFilterByTagInPhoto) !== -1)) {
-                  return photo;
-                }
-                strForFilterByTagInPhoto = '';
-                console.log("strForFilterByTagInPhoto", strForFilterByTagInPhoto);
-              }*/
-
-              }
-              strForFilterByTagInPhoto = "";
-              console.log("strForFilterByTagInPhoto", strForFilterByTagInPhoto);
-            }
+        const strForFilterByTag = this.state.tagToFilter || t;
+          if (this.state.mapOfTags.has(photo.albumId)) {
+             var tagsArray = this.state.mapOfTags.get(photo.albumId).get(photo.id);
+               if (tagsArray !== undefined ) {
+                  if (tagsArray.some((tag) => tag.search(strForFilterByTag) !== -1)){
+                     return photo;
+                  }
+               }
+           }
           return null;
-      });
+       });
         this.setState({
           photos: photos,
           tagToFilter: ""
         });
-
+        localStorage.setItem(
+          "_oksanakaragicheva_photos",
+          JSON.stringify(this.state.photos)
+        );
     });
-    console.log("this.state.tagToFilter FROM INPUT", this.state.tagToFilter);
  }
 
  openAlbum(e) {
@@ -146,6 +158,10 @@ class Gallery extends Component {
           photos: photos,
           titleToFilter: ""
         });
+        localStorage.setItem(
+          "_oksanakaragicheva_photos",
+          JSON.stringify(this.state.photos)
+        );
     });
  }
 
@@ -181,7 +197,7 @@ componentDidMount() {
               Albums
             </Dropdown.Header>
           </Dropdown.Toggle>
-            <Dropdown.Menu>
+            <Dropdown.Menu className="super-colors">
               {this.state.albums}
             </Dropdown.Menu>
        </Dropdown>
