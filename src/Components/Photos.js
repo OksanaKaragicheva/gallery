@@ -13,7 +13,7 @@ function Photos(props) {
                key={photo.id}
                photo={photo}
                tagsArray={tagsArray}
-               showNewTag={props.showNewTag}
+               updateMapOfTagsState={props.updateMapOfTagsState}
                filterByTag={props.filterByTag}
               />
            );

@@ -42,7 +42,7 @@ function Photo(props) {
              <Button
               className="addTagButton"
               variant="secondary"
-              onClick={() => props.showNewTag(props.photo.albumId, props.photo.id, inputNewTag)}
+              onClick={() => props.updateMapOfTagsState(props.photo.albumId, props.photo.id, inputNewTag)}
              >Add</Button>
             </InputGroup>
            </Card.Body>

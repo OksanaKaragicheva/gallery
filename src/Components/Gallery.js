@@ -8,45 +8,44 @@ class Gallery extends Component {
     super(props);
 
     this.state = {
-      albums: JSON.parse(localStorage.getItem("_oksanakaragicheva_albums")),
-      photos: JSON.parse(localStorage.getItem("_oksanakaragicheva_photos")),
-      mapOfTags: JSON.parse(localStorage.getItem("_oksanakaragicheva_tags")) !== null
-                 ? new Map(JSON.parse(localStorage.getItem("_oksanakaragicheva_tags")).map((el) => [el[0], new Map(el[1])]))
+      albums: this.parseAlbumsFromLocalStorage() !== null
+              ? this.parseAlbumsFromLocalStorage()
+              : [],
+      photos: this.parsePhotosFromLocalStorage(),
+      mapOfTags: this.parseTagsFromLocalStorage() !== null
+                 ? new Map(this.parseTagsFromLocalStorage().map((el) => [el[0], new Map(el[1])]))
                  : new Map(),
       titleToFilter: '',
       tagToFilter: ''
     }
 
-    this.request = this.request.bind(this);
+    this.storeAlbumsInState = this.storeAlbumsInState.bind(this);
     this.openAlbum = this.openAlbum.bind(this);
     this.handleTitleToFilter = this.handleTitleToFilter.bind(this);
     this.handleTagToFilter = this.handleTagToFilter.bind(this);
     this.filterByTitle = this.filterByTitle.bind(this);
     this.filterByTag = this.filterByTag.bind(this);
-    this.showNewTag = this.showNewTag.bind(this);
-
+    this.updateMapOfTagsState = this.updateMapOfTagsState.bind(this);
+    this.transformMapOfTagsToArray = this.transformMapOfTagsToArray.bind(this);
+    this.parseAlbumsFromLocalStorage = this.parseAlbumsFromLocalStorage.bind(this);
+    this.albumsToStringToLocalStorage = this.albumsToStringToLocalStorage.bind(this);
+    this.parsePhotosFromLocalStorage = this.parsePhotosFromLocalStorage.bind(this);
+    this.photosToStringToLocalStorage = this.photosToStringToLocalStorage.bind(this);
+    this.parseTagsFromLocalStorage = this.parseTagsFromLocalStorage.bind(this);
+    this.tagsToStringToLocalStorage = this.tagsToStringToLocalStorage.bind(this);
   }
 
   componentWillMount() {
-    if (localStorage.getItem("_oksanakaragicheva_photos") === null) {
-       localStorage.setItem(
-         "_oksanakaragicheva_photos",
-         JSON.stringify([])
-       );
+    console.log("componentWillMount");
+    if (this.parsePhotosFromLocalStorage() === null) {
+       this.photosToStringToLocalStorage([]);
        this.setState({
-         photos: JSON.parse(localStorage.getItem("_oksanakaragicheva_photos"))
+         photos: this.parsePhotosFromLocalStorage()
        });
     }
-    if (localStorage.getItem("_oksanakaragicheva_tags") === null) {
-       let nm1 = Array.from(this.state.mapOfTags.entries());
-       let nm2 = nm1.map((el) => [el[0], Array.from(el[1].entries())]);
-       let nm3 = nm2.map((el) => [el[0], el[1].map((elem) => [elem[0], [...elem[1]]])]);
-         localStorage.setItem(
-           "_oksanakaragicheva_tags",
-           JSON.stringify(nm3)
-         );
-       let nm4 = JSON.parse(localStorage.getItem("_oksanakaragicheva_tags")).map((el) => [el[0], new Map(el[1])]);
-       let newMapOfTags = new Map(nm4);
+    if (this.parseTagsFromLocalStorage() === null) {
+       this.tagsToStringToLocalStorage(this.transformMapOfTagsToArray(this.state.mapOfTags));
+       let newMapOfTags = new Map(this.parseTagsFromLocalStorage().map((el) => [el[0], new Map(el[1])]));
          this.setState({
            mapOfTags: newMapOfTags
          });
@@ -54,11 +53,11 @@ class Gallery extends Component {
   }
 
   componentDidMount() {
-    if (localStorage.getItem("_oksanakaragicheva_albums") === null) {
-      this.request("albums");
+    if (this.parseAlbumsFromLocalStorage() === null) {
+       this.storeAlbumsInState();
+         console.log("DATA FROM SERVER");
     } else {
-      console.log(localStorage.getItem("_oksanakaragicheva_albums"));
-      console.log("DATA FROM LOCALSTORAGE");
+        console.log("DATA FROM LOCALSTORAGE");
     }
   }
 
@@ -70,9 +69,34 @@ class Gallery extends Component {
     this.setState({ tagToFilter: e.target.value });
   }
 
-  showNewTag(albumId, photoId, inputNewTag) {
-    let nm4 = JSON.parse(localStorage.getItem("_oksanakaragicheva_tags")).map((el) => [el[0], new Map(el[1])]);
-    let newMapOfTags = new Map(nm4);
+  transformMapOfTagsToArray(mapOfTags) {
+    let nm1 = Array.from(mapOfTags.entries());
+    let nm2 = nm1.map((el) => [el[0], Array.from(el[1].entries())]);
+    let nm3 = nm2.map((el) => [el[0], el[1].map((elem) => [elem[0], [...elem[1]]])]);
+    return nm3;
+  }
+
+  parseAlbumsFromLocalStorage() {
+    return JSON.parse(localStorage.getItem("_oksanakaragicheva_albums"));
+  }
+  albumsToStringToLocalStorage(albums) {
+    return localStorage.setItem("_oksanakaragicheva_albums", JSON.stringify(albums));
+  }
+  parsePhotosFromLocalStorage() {
+    return JSON.parse(localStorage.getItem("_oksanakaragicheva_photos"));
+  }
+  photosToStringToLocalStorage(photos) {
+    return localStorage.setItem("_oksanakaragicheva_photos", JSON.stringify(photos));
+  }
+  parseTagsFromLocalStorage() {
+    return JSON.parse(localStorage.getItem("_oksanakaragicheva_tags"));
+  }
+  tagsToStringToLocalStorage(tags) {
+    return localStorage.setItem("_oksanakaragicheva_tags", JSON.stringify(tags));
+  }
+
+  updateMapOfTagsState(albumId, photoId, inputNewTag) {
+    let newMapOfTags = new Map(this.parseTagsFromLocalStorage().map((el) => [el[0], new Map(el[1])]));
     if (inputNewTag !== '') {
       if (newMapOfTags.get(albumId) === undefined) {
           newMapOfTags.set(albumId, new Map().set(photoId, [`#${inputNewTag}`]));
@@ -86,13 +110,7 @@ class Gallery extends Component {
       this.setState({
         mapOfTags: newMapOfTags
       });
-     let nm1 = Array.from(newMapOfTags.entries());
-     let nm2 = nm1.map((el) => [el[0], Array.from(el[1].entries())]);
-     let nm3 = nm2.map((el) => [el[0], el[1].map((elem) => [elem[0], [...elem[1]]])]);
-       localStorage.setItem(
-         "_oksanakaragicheva_tags",
-         JSON.stringify(nm3)
-       );
+      this.tagsToStringToLocalStorage(this.transformMapOfTagsToArray(newMapOfTags));
   }
 
   filterByTitle(){
@@ -115,10 +133,7 @@ class Gallery extends Component {
               photos: photos,
               titleToFilter: ""
             });
-            localStorage.setItem(
-              "_oksanakaragicheva_photos",
-              JSON.stringify(this.state.photos)
-            );
+            this.photosToStringToLocalStorage(this.state.photos);
        });
    }
 
@@ -144,10 +159,7 @@ class Gallery extends Component {
           photos: photos,
           tagToFilter: ""
         });
-        localStorage.setItem(
-          "_oksanakaragicheva_photos",
-          JSON.stringify(this.state.photos)
-        );
+        this.photosToStringToLocalStorage(this.state.photos);
     });
  }
 
@@ -167,34 +179,22 @@ class Gallery extends Component {
           photos: photos,
           titleToFilter: ""
         });
-        localStorage.setItem(
-          "_oksanakaragicheva_photos",
-          JSON.stringify(this.state.photos)
-        );
+        this.photosToStringToLocalStorage(this.state.photos);
     });
  }
 
-request(query) {
-  fetch(this.props.api + query)
+storeAlbumsInState() {
+  fetch(this.props.api + "albums")
     .then(response => {
        return response.json();
     })
     .then(data => {
-       const albums = data.map((obj, index) => {
-         return (
-           <Dropdown.Item eventKey={obj.id} key={obj.id} href="#" onSelect={this.openAlbum}>
-              {`${obj.title[0].toUpperCase()}${obj.title.slice(1)}`}
-           </Dropdown.Item>
-         );
+       this.setState({
+         albums: data
        });
-         this.setState({
-           albums: albums
-         });
-         localStorage.setItem(
-           "_oksanakaragicheva_albums",
-           JSON.stringify(this.state.albums)
-         );
+         this.albumsToStringToLocalStorage(data);
       });
+      console.log("this.state.albumsINFETCH", this.state.albums);
 }
 
 render() {
@@ -206,8 +206,14 @@ render() {
               Albums
             </Dropdown.Header>
           </Dropdown.Toggle>
-            <Dropdown.Menu className="super-colors">
-              {this.state.albums}
+            <Dropdown.Menu>
+              {this.state.albums.map(album => {
+                return (
+                  <Dropdown.Item eventKey={album.id} key={album.id} href="#" onSelect={this.openAlbum}>
+                    {`${album.title[0].toUpperCase()}${album.title.slice(1)}`}
+                  </Dropdown.Item>
+                );
+              })}
             </Dropdown.Menu>
        </Dropdown>
          <Filters
@@ -220,7 +226,7 @@ render() {
          />
          <Photos
            photos={this.state.photos}
-           showNewTag={this.showNewTag}
+           updateMapOfTagsState={this.updateMapOfTagsState}
            mapOfTags={this.state.mapOfTags}
            filterByTag={this.filterByTag}
          />
