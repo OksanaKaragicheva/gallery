@@ -55,9 +55,6 @@ class Gallery extends Component {
   componentDidMount() {
     if (this.parseAlbumsFromLocalStorage() === null) {
        this.storeAlbumsInState();
-         console.log("DATA FROM SERVER");
-    } else {
-        console.log("DATA FROM LOCALSTORAGE");
     }
   }
 
@@ -70,10 +67,10 @@ class Gallery extends Component {
   }
 
   transformMapOfTagsToArray(mapOfTags) {
-    let nm1 = Array.from(mapOfTags.entries());
-    let nm2 = nm1.map((el) => [el[0], Array.from(el[1].entries())]);
-    let nm3 = nm2.map((el) => [el[0], el[1].map((elem) => [elem[0], [...elem[1]]])]);
-    return nm3;
+    let arrayOfKeyValuePairArrays = Array.from(mapOfTags.entries());
+    let arrayOfKeyValuePairArrays_2 = arrayOfKeyValuePairArray.map((el) => [el[0], Array.from(el[1].entries())]);
+    let arrayOfArrays = arrayOfKeyValuePairArrays_2.map((el) => [el[0], el[1].map((elem) => [elem[0], [...elem[1]]])]);
+    return arrayOfArrays;
   }
 
   parseAlbumsFromLocalStorage() {
@@ -194,7 +191,6 @@ storeAlbumsInState() {
        });
          this.albumsToStringToLocalStorage(data);
       });
-      console.log("this.state.albumsINFETCH", this.state.albums);
 }
 
 render() {
