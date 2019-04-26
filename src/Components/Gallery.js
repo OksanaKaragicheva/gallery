@@ -12,9 +12,9 @@ class Gallery extends Component {
               ? this.parseAlbumsFromLocalStorage()
               : [],
       photos: this.parsePhotosFromLocalStorage(),
-      mapOfTags: this.parseTagsFromLocalStorage() !== null
-                 ? new Map(this.parseTagsFromLocalStorage().map((el) => [el[0], new Map(el[1])]))
-                 : new Map(),
+      objOfTags: this.parseTagsFromLocalStorage() !== null
+                 ? this.parseTagsFromLocalStorage()
+                 : {},
       titleToFilter: '',
       tagToFilter: ''
     }
@@ -25,8 +25,7 @@ class Gallery extends Component {
     this.handleTagToFilter = this.handleTagToFilter.bind(this);
     this.filterByTitle = this.filterByTitle.bind(this);
     this.filterByTag = this.filterByTag.bind(this);
-    this.updateMapOfTagsState = this.updateMapOfTagsState.bind(this);
-    this.transformMapOfTagsToArray = this.transformMapOfTagsToArray.bind(this);
+    this.updateObjOfTagsState = this.updateObjOfTagsState.bind(this);
     this.parseAlbumsFromLocalStorage = this.parseAlbumsFromLocalStorage.bind(this);
     this.albumsToStringToLocalStorage = this.albumsToStringToLocalStorage.bind(this);
     this.parsePhotosFromLocalStorage = this.parsePhotosFromLocalStorage.bind(this);
@@ -36,7 +35,6 @@ class Gallery extends Component {
   }
 
   componentWillMount() {
-    console.log("componentWillMount");
     if (this.parsePhotosFromLocalStorage() === null) {
        this.photosToStringToLocalStorage([]);
        this.setState({
@@ -44,10 +42,9 @@ class Gallery extends Component {
        });
     }
     if (this.parseTagsFromLocalStorage() === null) {
-       this.tagsToStringToLocalStorage(this.transformMapOfTagsToArray(this.state.mapOfTags));
-       let newMapOfTags = new Map(this.parseTagsFromLocalStorage().map((el) => [el[0], new Map(el[1])]));
+       this.tagsToStringToLocalStorage({});
          this.setState({
-           mapOfTags: newMapOfTags
+           objOfTags: this.parseTagsFromLocalStorage()
          });
      }
   }
@@ -64,13 +61,6 @@ class Gallery extends Component {
 
   handleTagToFilter(e) {
     this.setState({ tagToFilter: e.target.value });
-  }
-
-  transformMapOfTagsToArray(mapOfTags) {
-    let arrayOfKeyValuePairArrays = Array.from(mapOfTags.entries());
-    let arrayOfKeyValuePairArrays_2 = arrayOfKeyValuePairArray.map((el) => [el[0], Array.from(el[1].entries())]);
-    let arrayOfArrays = arrayOfKeyValuePairArrays_2.map((el) => [el[0], el[1].map((elem) => [elem[0], [...elem[1]]])]);
-    return arrayOfArrays;
   }
 
   parseAlbumsFromLocalStorage() {
@@ -92,22 +82,24 @@ class Gallery extends Component {
     return localStorage.setItem("_oksanakaragicheva_tags", JSON.stringify(tags));
   }
 
-  updateMapOfTagsState(albumId, photoId, inputNewTag) {
-    let newMapOfTags = new Map(this.parseTagsFromLocalStorage().map((el) => [el[0], new Map(el[1])]));
+  updateObjOfTagsState(albumId, photoId, inputNewTag) {
+    let newObjOfTags = Object.assign({}, this.state.objOfTags);
     if (inputNewTag !== '') {
-      if (newMapOfTags.get(albumId) === undefined) {
-          newMapOfTags.set(albumId, new Map().set(photoId, [`#${inputNewTag}`]));
+      if (newObjOfTags.hasOwnProperty(albumId) === false) {
+         newObjOfTags[albumId] = {[photoId]: []};
+         newObjOfTags[albumId][photoId] = [`#${inputNewTag}`];
       }
       else {
-          newMapOfTags.get(albumId).set(photoId, newMapOfTags.get(albumId).get(photoId) === undefined
-                                                 ? [`#${inputNewTag}`]
-                                                 : [...newMapOfTags.get(albumId).get(photoId), `#${inputNewTag}`]);
+        if (newObjOfTags[albumId][photoId] === undefined) {
+           newObjOfTags[albumId][photoId] = [];
+        }
+           newObjOfTags[albumId][photoId].push(`#${inputNewTag}`);
       }
-     }
+    }
       this.setState({
-        mapOfTags: newMapOfTags
+        objOfTags: newObjOfTags
       });
-      this.tagsToStringToLocalStorage(this.transformMapOfTagsToArray(newMapOfTags));
+      this.tagsToStringToLocalStorage(newObjOfTags);
   }
 
   filterByTitle(){
@@ -142,8 +134,8 @@ class Gallery extends Component {
      .then(data => {
         const photos = data.filter((photo, index) => {
         const strForFilterByTag = this.state.tagToFilter || t;
-          if (this.state.mapOfTags.has(photo.albumId)) {
-             var tagsArray = this.state.mapOfTags.get(photo.albumId).get(photo.id);
+          if (this.state.objOfTags.hasOwnProperty(photo.albumId)) {
+             var tagsArray = this.state.objOfTags[photo.albumId][photo.id];
                if (tagsArray !== undefined ) {
                   if (tagsArray.some((tag) => tag.search(strForFilterByTag) !== -1)){
                      return photo;
@@ -222,8 +214,8 @@ render() {
          />
          <Photos
            photos={this.state.photos}
-           updateMapOfTagsState={this.updateMapOfTagsState}
-           mapOfTags={this.state.mapOfTags}
+           updateObjOfTagsState={this.updateObjOfTagsState}
+           objOfTags={this.state.objOfTags}
            filterByTag={this.filterByTag}
          />
       </div>

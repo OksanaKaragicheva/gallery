@@ -13,7 +13,7 @@ function Photo(props) {
         <Card.Title className="photoTitle">{props.photo.title}</Card.Title>
          <Card.Text>
          {
-          typeof props.tagsArray == 'object'
+          props.tagsArray !== undefined
           ? (props.tagsArray.map((el, index) => {
              return (
                <Button
@@ -27,7 +27,7 @@ function Photo(props) {
                </Button>
              );
             }))
-          : ""
+          : []
           }
           </Card.Text>
           <InputGroup>
@@ -42,7 +42,7 @@ function Photo(props) {
              <Button
               className="addTagButton"
               variant="secondary"
-              onClick={() => props.updateMapOfTagsState(props.photo.albumId, props.photo.id, inputNewTag)}
+              onClick={() => props.updateObjOfTagsState(props.photo.albumId, props.photo.id, inputNewTag)}
              >Add</Button>
             </InputGroup>
            </Card.Body>
